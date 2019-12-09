@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+     integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <title>Wiffle - online Notepad with offline storage</title>
+
+    <style type="text/css">
+    
+    body { background-color: black; color: white; }
+
+    a { color: orange; margin-right: 12px; }
+
+    a:hover {
+        color: lightgoldenrodyellow;
+    }
+
+    textarea { background-color: #222222; color: white; }
+    
+    </style>
+
+  </head>
+  <body>
+    
+    <div style="width: 100%; margin: 0; padding: 8px;" id="hashes"></div>
+
+    <textarea id="text" style="width: 98%; height: 93vh; padding: 6px; margin: 12px; "></textarea>
+        
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+  
+
+    <script type="text/javascript">
+
+    var hashes;
+
+        $(document).ready(function() {
+
+            loadHashes();
+
+            syncHashes();
+
+            loadIt();
+
+            window.onhashchange = function () {
+                syncHashes();
+                loadIt();
+            };
+
+            $( "#text" ).keyup(function() {
+                saveIt();
+            });
+
+            setInterval(function(){
+                saveIt();
+            }, 10000);
+
+        });
+
+
+        // get all url hashes from local storage
+        function loadHashes() {
+            hashes = localStorage.getItem("hashes");
+            if (hashes) {
+                try {
+                    hashes = JSON.parse(hashes);
+                } catch (e) {
+                    hashes = [];
+                }
+            } else {
+                hashes = [];
+            }
+        }
+
+        function syncHashes() {
+            $("#hashes").html("");
+            var found = false;
+            $(hashes).each(function(idx, e) {
+                if (e === window.location.hash) {
+                    $("#hashes").append("<a href='"+e+"'>" +e+ "</a> <a onclick='return deleteIt();'>[x]</a>");
+                    found = true;
+                } else {
+                    $("#hashes").append("<a href='"+e+"'>" +e+ "</a>");
+                }
+            });
+            
+            if (!found) {
+                $("#hashes").append("<span style='color: lightgrey'>"+window.location.hash+"</span>");
+            }
+        }
+
+
+        function loadIt() {
+            // get current uri hash
+            var currentHash = window.location.hash;
+
+            // if not present, generate new one
+            if (!currentHash) {
+
+                if (hashes.length > 0) {
+                    currentHash = hashes[0];
+                } else {
+                    currentHash = "#" + makeid(5);
+                }
+                window.location.hash = currentHash;
+
+            } else {
+
+                // if hash, load storage content with this hash
+                var text = localStorage.getItem(currentHash);
+                $("#text").val(text);
+
+            }
+        }
+
+        function deleteIt() {
+            if (confirm("sure to delete this one?")) {
+                // get current uri hash
+                var currentHash = window.location.hash;
+
+                // remove from hashes array
+                var idx = hashes.indexOf(currentHash);
+                hashes.remove(idx);
+                saveHashes();
+                localStorage.removeItem(currentHash);
+                window.location.hash = "";
+                loadIt();
+            }
+        }
+
+
+        function saveIt() {
+            var currentHash = window.location.hash;
+            if (currentHash) {
+
+                var text = $("#text").val();
+                if (text != "") {
+                    localStorage.setItem(currentHash, text);
+                    if (!hashes.includes(currentHash)) {
+                        hashes.push(currentHash);
+                        saveHashes();
+                    }
+                } else {
+                    // we skip saving new hashes if no content is added
+                }
+
+            } else {
+                alert("error: there should be a hash in the browser");
+            }
+        }
+
+        function saveHashes() {
+            localStorage.setItem("hashes", JSON.stringify(hashes));
+            syncHashes();
+        }
+
+        function makeid(length) {
+            var result           = '';
+            var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+            var charactersLength = characters.length;
+            for ( var i = 0; i < length; i++ ) {
+                result += characters.charAt(Math.floor(Math.random() * charactersLength));
+            }
+            return result;
+        }
+
+        
+
+// Array Remove - By John Resig (MIT Licensed)
+Array.prototype.remove = function(from, to) {
+  var rest = this.slice((to || from) + 1 || this.length);
+  this.length = from < 0 ? this.length + from : from;
+  return this.push.apply(this, rest);
+};
+
+    </script>
+
+
+
+</body>
+</html>
