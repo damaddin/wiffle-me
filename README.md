@@ -2,7 +2,7 @@
 
 The idea is simple: have a nodepad for quick copy-paste operations, temporary storage and some editing directly in the browser. Nothing fancy, in the end basically just a large empty text area.
 
-Inspired by {{https://editpad.org}} I wanted to add editor tabs and save to local storage so browser crashes don't lose my data. 
+Inspired by https://editpad.org I wanted to add editor tabs and save to local storage so browser crashes don't lose my data. 
 
 There is no backend connection whatsoever, no login, no nothing. You can only see what you typed it yourself.
 
