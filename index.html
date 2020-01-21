@@ -27,8 +27,8 @@
         padding: 6px;
     }
 
-    .inactive {
-
+    .tab-active {
+        color: lightgoldenrodyellow;
     }
 
     .btn {
@@ -107,15 +107,15 @@
             var found = false;
             $(hashes).each(function(idx, e) {
                 if (e === window.location.hash) {
-                    $("#hashes").append("<a href='"+e+"' class='tab'>" +e+ "</a> <a onclick='return renameIt();' class='btn'>r</a><a onclick='return deleteIt();' class='btn'>x</a>");
+                    $("#hashes").append("<a href='"+e+"' class='tab tab-active'>" +e+ "</a> <a onclick='return renameIt();' class='btn'>r</a><a onclick='return deleteIt();' class='btn'>x</a>");
                     found = true;
                 } else {
-                    $("#hashes").append("<a href='"+e+"' class='tab inactive'>" +e+ "</a>");
+                    $("#hashes").append("<a href='"+e+"' class='tab'>" +e+ "</a>");
                 }
             });
             
             if (!found) {
-                $("#hashes").append("<span style='color: lightgrey' class='tab inactive'>"+window.location.hash+"</span>");
+                $("#hashes").append("<span style='color: lightgrey' class='tab'>"+window.location.hash+"</span>");
             }
         }
 
