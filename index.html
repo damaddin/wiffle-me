@@ -15,7 +15,28 @@
     
     body { background-color: black; color: white; }
 
-    a { color: orange; margin-right: 12px; }
+    a { color: orange; }
+
+    .tab {
+        border: 1px solid lightgoldenrodyellow;
+        
+        margin-right: 4px;
+        margin-left: 12px;
+        line-height: 1.3em;
+        border-radius: 4px;
+        padding: 6px;
+    }
+
+    .inactive {
+
+    }
+
+    .btn {
+        border: 1px solid lightseagreen;
+        padding: 4px;
+        margin-right: 4px;
+        line-height: 1.3em;
+    }
 
     a:hover {
         color: lightgoldenrodyellow;
@@ -86,15 +107,15 @@
             var found = false;
             $(hashes).each(function(idx, e) {
                 if (e === window.location.hash) {
-                    $("#hashes").append("<a href='"+e+"'>" +e+ "</a> <a onclick='return deleteIt();'>[x]</a>");
+                    $("#hashes").append("<a href='"+e+"' class='tab'>" +e+ "</a> <a onclick='return renameIt();' class='btn'>r</a><a onclick='return deleteIt();' class='btn'>x</a>");
                     found = true;
                 } else {
-                    $("#hashes").append("<a href='"+e+"'>" +e+ "</a>");
+                    $("#hashes").append("<a href='"+e+"' class='tab inactive'>" +e+ "</a>");
                 }
             });
             
             if (!found) {
-                $("#hashes").append("<span style='color: lightgrey'>"+window.location.hash+"</span>");
+                $("#hashes").append("<span style='color: lightgrey' class='tab inactive'>"+window.location.hash+"</span>");
             }
         }
 
@@ -119,6 +140,31 @@
                 var text = localStorage.getItem(currentHash);
                 $("#text").val(text);
 
+            }
+        }
+
+        function renameIt() {
+            var name = prompt("new name?");
+            if (name) {
+                name = "#" + name;
+                // get current uri hash
+                var currentHash = window.location.hash;
+
+                // remove from hashes array
+                var idx = hashes.indexOf(currentHash);
+                var val = hashes.remove(idx);
+
+                // put new name.
+                hashes.push(name);
+
+                // move data 
+                var data = localStorage.getItem(currentHash)
+                localStorage.removeItem(currentHash);
+                localStorage.setItem(name, data);
+
+                saveHashes();
+                window.location.hash = name;
+                loadIt();
             }
         }
 
